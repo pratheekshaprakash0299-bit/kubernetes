@@ -13,7 +13,7 @@ pipeline {
 
     stage('Configure kubeconfig') {
       steps {
-        withCredentials([string(credentialsId: 'k8s-token1', variable: 'KUBE_TOKEN')]) {
+        withCredentials([string(credentialsId: 'kubernetes-token1', variable: 'KUBE_TOKEN')]) {
           
           sh '''
             set -euo pipefail
