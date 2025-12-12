@@ -15,7 +15,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([string(credentialsId: 'token-k8s', variable: 'KUBE_TOKEN')]) {
+                withCredentials([string(credentialsId: 'token-K8s-1', variable: 'KUBE_TOKEN')]) {
                     sh '''
                         set -e
 
