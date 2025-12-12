@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    K8S_API_SERVER = "https://172.31.28.163:6443"
+    K8S_API_SERVER = "https://172.31.11.205:6443"
     K8S_NAMESPACE  = "demo"
     PATH = "/usr/local/bin:${env.PATH}"
 
@@ -16,7 +16,7 @@ pipeline {
 
     stage('Configure kubeconfig') {
       steps {
-        withCredentials([string(credentialsId: 'k8s-token1', variable: 'KUBE_TOKEN')]) {
+        withCredentials([string(credentialsId: 'token-k8s', variable: 'KUBE_TOKEN')]) {
           
           sh '''#!/usr/bin/env bash
 set -euo pipefail
