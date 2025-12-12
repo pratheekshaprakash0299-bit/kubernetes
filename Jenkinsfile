@@ -4,6 +4,8 @@ pipeline {
   environment {
     K8S_API_SERVER = "https://172.31.28.163:6443"
     K8S_NAMESPACE  = "demo"
+    PATH = "/usr/local/bin:${env.PATH}"
+
   }
 
   stages {
