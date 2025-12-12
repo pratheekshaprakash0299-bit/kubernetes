@@ -19,9 +19,10 @@ pipeline {
           sh '''#!/usr/bin/env bash
 set -euo pipefail
 
-mkdir -p "$HOME/.kube"
+mkdir -p "$WORKSPACE/.kube"
+export KUBECONFIG="$WORKSPACE/.kube/config"
 
-cat > "$HOME/.kube/config" <<EOF
+cat > "$KUBECONFIG" <<EOF
 apiVersion: v1
 kind: Config
 clusters:
