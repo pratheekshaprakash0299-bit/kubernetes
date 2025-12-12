@@ -7,6 +7,7 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
       steps { checkout scm }
     }
@@ -15,11 +16,12 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'kubernetes-token1', variable: 'KUBE_TOKEN')]) {
           
-          sh '''
-            set -euo pipefail
-            mkdir -p "$HOME/.kube"
+          sh '''#!/usr/bin/env bash
+set -euo pipefail
 
-            cat > "$HOME/.kube/config" <<EOF
+mkdir -p "$HOME/.kube"
+
+cat > "$HOME/.kube/config" <<EOF
 apiVersion: v1
 kind: Config
 clusters:
@@ -40,30 +42,29 @@ users:
     token: ${KUBE_TOKEN}
 EOF
 
-            kubectl version --client=true
-            kubectl cluster-info
-          '''
+kubectl version --client=true
+kubectl cluster-info
+'''
         }
       }
     }
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh '''
-          set -euo pipefail
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
 
-          # 1) Create namespace first (safe if already exists)
-          kubectl apply -f manifests/namespace.yaml
+# 1) Create namespace first (safe if already exists)
+kubectl apply -f manifests/namespace.yaml
 
-          # 2) Optional: quick auth check (helps debug 401/403 fast)
-          kubectl auth can-i get pods -n ${K8S_NAMESPACE} || true
-          kubectl auth can-i apply -f manifests/ -n ${K8S_NAMESPACE} || true
+# 2) Quick RBAC check (not required, but helpful)
+kubectl auth can-i get pods -n ${K8S_NAMESPACE} || true
+kubectl auth can-i apply -f manifests/ -n ${K8S_NAMESPACE} || true
 
-          # 3) Apply the rest into the namespace
-          kubectl apply -n ${K8S_NAMESPACE} -f manifests/
-        '''
+# 3) Apply remaining manifests
+kubectl apply -n ${K8S_NAMESPACE} -f manifests/
+'''
       }
     }
   }
 }
-
