@@ -14,12 +14,14 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-    steps {
-        withCredentials([string(credentialsId: 'token-k8s', variable: 'KUBE_TOKEN')]) {
-            sh '''
-                export KUBECONFIG=$WORKSPACE/kubeconfig
+            steps {
+                withCredentials([string(credentialsId: 'token-k8s', variable: 'KUBE_TOKEN')]) {
+                    sh '''
+                        set -e
 
-                cat <<EOF > $KUBECONFIG
+                        export KUBECONFIG=$WORKSPACE/kubeconfig
+
+                        cat <<EOF > $KUBECONFIG
 apiVersion: v1
 kind: Config
 clusters:
@@ -40,10 +42,21 @@ users:
     token: ${KUBE_TOKEN}
 EOF
 
-                kubectl version --client
-                kubectl get ns
-                kubectl apply -f manifests/
-            '''
+                        kubectl version --client
+                        kubectl get ns
+                        kubectl apply -f manifests/
+                    '''
+                }
+            }
         }
     }
+
+    post {
+        success {
+            echo 'Deployment to Kubernetes completed successfully ✅'
         }
+        failure {
+            echo 'Deployment failed ❌'
+        }
+    }
+}
